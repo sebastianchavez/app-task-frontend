@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { BrowserRouter as Router, Switch } from 'react-router-dom'
+import { GuardProvider, GuardedRoute } from 'react-router-guards';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  //components
+import Navbar from './components/Navbar'
+
+// pages
+import NotFound from './pages/404'
+import Tasks from './pages/Tasks'
+import Devs from './pages/Devs'
+import Login from './pages/Login'
+
+// guard
+import { isLogin } from './guards/isLogin'
+
+
+export default () => {
+
+  const [userAuth, setUserAuth] = useState(false)
+  
+  return (  
+    <Router>
+    <GuardProvider guards={[isLogin]} error={NotFound}>
+      <Navbar />
+      <Switch>
+          <GuardedRoute path="/" component={Tasks} exact meta={{ auth: true }} />
+          <GuardedRoute path="/devs" component={Devs} exact meta={{ auth: true }}  />
+          <GuardedRoute path="/login" component={() => <Login/>} exact />
+          <GuardedRoute path="*" component={NotFound}  />
+      </Switch> 
+      <ToastContainer/>
+    </GuardProvider>
+    </Router>
+  )
 }
-
-export default App;
