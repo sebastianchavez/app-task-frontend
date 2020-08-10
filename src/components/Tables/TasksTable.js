@@ -1,34 +1,36 @@
 import React from 'react'
 import translate from '../../servives/translate'
 
-export default ({ tasks, setCurrentId, onDelete, openModal }) => {
+export default ({ tasks, onDelete, handleShow, openViewModal }) => {
     return (
         <table className="table table-hover">
-            <thead>
+            <thead className="bg-success">
                 <tr>
                     <th scope="col">Taréa</th>
                     <th scope="col">Proyecto</th>
-                    <th scope="col">Horas asignadas</th>
-                    <th scope="col">Prioridad</th>
-                    <th scope="col">Acción</th>
+                    <th scope="col" className="text-center">Horas asignadas</th>
+                    <th scope="col" className="text-center">Prioridad</th>
+                    <th scope="col" className="text-center">Estado</th>
+                    <th scope="col" className="text-center">Acción</th>
                 </tr>
             </thead>
             <tbody>
                 {
                     tasks.map(t => (
-                        <tr key={t.id}>
-                            <td>{t.name.substr(0, 20)}</td>
-                            <td>{t.dev ? t.dev.substr(0, 30) : ''}</td>
-                            <td className="text-center">{t.hours}</td>
+                        <tr key={t._id} className={`${t.state === 'finish' ? "table-success" : ""}`}>
+                            <td>{t.name.substr(0, 40)}</td>
+                            <td>{t.devId && t.devId.name ? t.devId.name.substr(0, 30) : ''}</td>
+                            <td className="text-center">{t.plannedHours}</td>
                             <td className="text-center">{translate(t.priority)}</td>
-                            <td>
-                                <button className="btn btn-sm btn-success m-1" onClick={() => openModal(t)}>
+                            <td className="text-center">{translate(t.state)}</td>
+                            <td className="text-center">
+                                <button className="btn btn-sm btn-outline-success m-1" onClick={() => openViewModal(t)}>
                                     <i className="material-icons">remove_red_eye</i>
                                 </button>
-                                <button className="btn btn-sm btn-warning m-1" onClick={() => setCurrentId(t.id)}>
+                                <button className="btn btn-sm btn-outline-warning m-1" onClick={() => handleShow(t)}>
                                     <i className="material-icons">create</i>
                                 </button>
-                                <button className="btn btn-sm btn-danger m-1" onClick={() => onDelete(t.id)}>
+                                <button className="btn btn-sm btn-outline-danger m-1" onClick={() => onDelete(t._id)}>
                                     <i className="material-icons">close</i>
                                 </button>
                             </td>

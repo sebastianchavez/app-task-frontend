@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { BrowserRouter as Router, Switch } from 'react-router-dom'
+import { Switch, HashRouter  as Router } from 'react-router-dom'
 import { GuardProvider, GuardedRoute } from 'react-router-guards';
 
   //components
@@ -20,8 +20,6 @@ import { isLogin } from './guards/isLogin'
 
 export default () => {
 
-  const [userAuth, setUserAuth] = useState(false)
-  
   return (  
     <Router>
     <GuardProvider guards={[isLogin]} error={NotFound}>

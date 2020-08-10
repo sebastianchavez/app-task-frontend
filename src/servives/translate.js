@@ -8,6 +8,7 @@ const dictiorary = [
     {eng: 'finish', esp: 'Finalizado'},
     {eng: 'pending', esp: 'Pendiente'},
     {eng: 'developing', esp: 'En desarrollo'},
+    {eng: 'cancelled', esp: 'Cancelado'},
     {eng: 'web', esp: 'Web'},
     {eng: 'mobile', esp: 'Móvil'},
     {eng: 'desktop', esp: 'Escritorio'},

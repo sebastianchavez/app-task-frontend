@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import './firebase'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootswatch/dist/superhero/bootstrap.min.css'
 
 

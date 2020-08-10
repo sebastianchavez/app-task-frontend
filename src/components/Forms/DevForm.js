@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import translate from '../../servives/translate'
+import { useForm } from "react-hook-form";
 
-export default (props) => {
+export default ({addDev}) => {
+
+    const required = 'Este campo es requerido'
 
     const initialValues = {
         name:'',
@@ -19,26 +22,34 @@ export default (props) => {
         { value: 'web' },
         { value: 'mobile' },
         { value: 'desktop' },
-        { value: 'game' }
+        { value: 'game' },
+        { value: 'devops' }
     ]
 
     const [values, setValues] = useState(initialValues)
+    const { register, handleSubmit, errors } = useForm();
     
     const handleInputChange = e => {
         const { name, value } = e.target
         setValues({...values, [name]: value})
     }
 
-    const handleSubmit = e => {
-        e.preventDefault()
-        props.addDev(values)
+    const onSubmit = e => {
+        addDev(values)
         setValues({...initialValues})
     }
 
+    const errorMessage = error => {
+        return <div className="invalid-feedback d-block">{error}</div>
+    }
+
     return (
-        <form className="card card-body" onSubmit={handleSubmit}>
+        <form className="card card-body" onSubmit={handleSubmit(onSubmit)}>
             <div className="form-group">
-                <input type="text" className="form-control" placeholder="Nombre" name="name" id="" value={values.name} onChange={handleInputChange}/>
+                <input type="text" className="form-control" placeholder="Nombre" name="name" id="" 
+                value={values.name} onChange={handleInputChange} ref={register({ required: true })}/>
+                {errors.name && errors.name.type === "required" &&
+                    errorMessage(required)}
             </div>
             <div className="form-group">
                 <label>Tipo</label>
