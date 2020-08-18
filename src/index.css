@@ -30,3 +30,23 @@
 .border-light {
     border: 1px solid #d3d3d3;
 }
+
+.bg-header-login {
+    text-align: center;
+    color: white;
+    background-image: url("./assets/imgs/bg-login.jpg");
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
+    height: 520px;
+    padding-top: 80px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+body {
+    background-color: #d3d3d3 !important;
+}

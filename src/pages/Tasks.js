@@ -1,12 +1,22 @@
+//******** React ********/
 import React, { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
+import { Button } from 'react-bootstrap'
+
+//******** Services ********/
+import { get, post, put, remove } from '../servives/api'
+import { log, error } from '../servives/logger'
+import { toast, confirm } from '../servives/messages'
+
+//******** Components ********/
 import TaskForm from '../components/Forms/TaskForm'
 import TasksTable from '../components/Tables/TasksTable'
 import TaskModal from '../components/Modals/DefaultModal'
 import TaskDetail from '../components/Views/TaskDetail'
 import TaskHeader from '../components/Headers/TaskHeader'
-import { Button } from 'react-bootstrap'
-import { get, post, put, remove } from '../servives/api'
+
+
+//******** CONSTANTS ********/
+import CONSTANTS from '../constants/constants'
 
 export default () => {
 
@@ -18,19 +28,23 @@ export default () => {
     const [tasks, setTasks] = useState([])
     const [devs, setDevs] = useState([])
     const [filter, setFilter] = useState({})
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const [show, setShow] = useState(false)
+    const handleClose = () => setShow(false)
+    const handleShow = () => setShow(true)
     const [data, setData] = useState({})
     const [modalTitle, setModalTitle] = useState('Nueva taréa')
+    const [quant, setQuant] = useState(CONSTANTS.QUANT[0].value)
+    const [user, setUser] = useState(localStorage.getItem('currentUser')? JSON.parse(localStorage.getItem('currentUser')) : null )
 
     const getTasks = async () => {
         try {
-            const tasks = await get('tasks/get-tasks')
-            console.log(tasks.data.tasks)
-            setTasks(tasks.data.tasks)
+            if(user){
+                const tasks = await get(`tasks/get-by-userId/${user._id}/quant/${quant}`)
+                log('Tasks', 'getTasks', {info: 'Success getTasks', response: tasks})
+                setTasks(tasks.data)
+            }
         } catch (e) {
-            console.log(e)
+            error('Tasks', 'getTasks', {info: 'Catch error getTasks', error: e})
         }
     }
 
@@ -39,57 +53,67 @@ export default () => {
             let request = values
             request.plannedHours = parseFloat(request.plannedHours)
             await post('tasks/new-task', values)
-            toast('Nueva tarea agregada', { type: 'info', autoClose: 2000, hideProgressBar: true })
-            getTasks()
+            log('Tasks', 'addTask', {info: 'Success addTask'})
+            toast('Nueva tarea agregada')
+            filterTask()
         } catch (e) {
-            console.log(e)
-            toast('Problemas al agregar tarea', { type: 'error', autoClose: 2000, hideProgressBar: true })
+            error('Tasks', 'addTask', {info: 'Catch error', error: e})
+            toast('Problemas al agregar tarea', 'error')
         }
     }
 
     const editTask = async (values) => {
         try{
             await put(`tasks/update-task/${values._id}`, values)
-            toast('Tarea actualizada', { type: 'info', autoClose: 2000, hideProgressBar: true })
-            getTasks()
+            log('Tasks', 'editTask', {info: 'Success editTask'})
+            toast('Tarea actualizada')
+            filterTask()
         } catch (e) {
-            console.log(e)
-            toast('Problemas al editar tarea', { type: 'error', autoClose: 2000, hideProgressBar: true })
+            error('Tasks', 'editTask', {info: 'Catch error', error: e})
+            toast('Problemas al editar tarea', 'error')
         }
     }
 
     const getDevs = async () => {
          try {
-            const response = await get('devs/get-devs')
-            setDevs(response.data.devs)
+             if(user){
+                 const response = await get(`devs/get-by-userId/${user._id}/quant/all`)
+                 log('Tasks', 'getDevs', {info: 'Success getDevs', response})
+                 setDevs(response.data)
+             }
         } catch (e) {
-            console.log('ERROR', e)
+            error('Tasks', 'getDevs', {info: 'Catch error', error: e})
         }
     }
 
     const onDelete = async (_id) => {
         try {
-            if (window.confirm('Eliminar tarea?')) {
+            let res = await confirm('Desea eliminar esta taréa?')
+            if(res.value){
                 await remove(`tasks/delete-task/${_id}`)
-                toast('Tarea eliminada', { type: 'error', autoClose: 2000, hideProgressBar: true })
-                getTasks()
+                log('Tasks', 'onDelete', {info: 'Success onDelete'})
+                toast('Tarea eliminada')
+                filterTask()
             }
         } catch (e) {
-            console.error(e)
-            toast('Problemas al eliminar', { type: 'warning', autoClose: 2000, hideProgressBar: true })
+            error('Tasks', 'onDelete', {info: 'Catch error', error: e})
+            toast('Problemas al eliminar, intente más tarde', 'error')
         }
     }
 
-    const searchTask = async e => {
+    const searchTask = e => {
+        e.preventDefault()
+        filterTask()
+    }
+
+    const filterTask = async () => {
         try {
-            e.preventDefault()
-            console.log('SEARCH:', filter)
-            let query = `?name=${filter.name ? filter.name : ''}&state=${filter.state ? filter.state : ''}&devId=${filter.devId ? filter.devId : ''}&priority=${filter.priority ? filter.priority : ''}`
+            let query = `?name=${filter.name ? filter.name : ''}&state=${filter.state ? filter.state : ''}&devId=${filter.devId ? filter.devId : ''}&priority=${filter.priority ? filter.priority : ''}&quant=${quant}`
             const tasks = await get(`tasks/get-by-params/${query}`)
+            log('Tasks', 'filterTask', {info: 'Success', response: tasks})
             setTasks(tasks.data)
-            console.log('tasks:',tasks)
         } catch (e) {
-            console.log(e)   
+            error('Tasks', 'filterTask', {info: 'Catch error', error: e})
         }
     }
 
@@ -113,7 +137,7 @@ export default () => {
 
     return (
         <>
-            <div className="container-fluid mt-4">
+            <div className="container mt-5 mb-5">
                 <div className="row">
                     <div className="col-md-12">
                         <TaskHeader {...{searchTask, setFilter, filter, devs}} />
@@ -125,7 +149,7 @@ export default () => {
                             <div className="card-body">
                                 <div className="row">
                                     <div className="col-md-3">
-                                        <Button className="btn btn-info" variant="primary" onClick={openNewModal}>
+                                        <Button className="btn btn-success" variant="primary" onClick={openNewModal}>
                                             Nueva tarea
                                         </Button>
                                         <TaskModal onHide={handleClose} show={show} title={modalTitle} >
@@ -134,6 +158,20 @@ export default () => {
                                             <TaskDetail {...{data}} />
                                             }
                                         </TaskModal>
+                                    </div>
+                                </div>
+                                <div className="row mt-3">
+                                    <div className="col-md-2 mr-auto">
+                                        <div className="form-group">
+                                            <select onChange={e => setQuant(e.target.value)} name="" className="form-control" id="">
+                                                {CONSTANTS.QUANT.map((q, i) => <option key={i+'_quant'} value={q.value}>{q.name}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 ml-auto">
+                                            <div className="form-group">
+                                                <input type="text" placeholder="Buscar" className="form-control" name="" id=""/>
+                                            </div>
                                     </div>
                                 </div>
                                 <div className="row mt-3">

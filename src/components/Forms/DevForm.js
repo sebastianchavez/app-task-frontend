@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import translate from '../../servives/translate'
-import { useForm } from "react-hook-form";
+import { useForm } from "react-hook-form"
+import CONSTANTS from '../../constants/constants'
 
-export default ({addDev}) => {
+export default ({addDev, data}) => {
 
     const required = 'Este campo es requerido'
 
@@ -12,22 +13,8 @@ export default ({addDev}) => {
         state:'pending'
     }
 
-    const states = [
-        { value:'pending' },
-        { value:'developing' },
-        { value:'finish' }
-    ]
-
-    const typesDev = [
-        { value: 'web' },
-        { value: 'mobile' },
-        { value: 'desktop' },
-        { value: 'game' },
-        { value: 'devops' }
-    ]
-
-    const [values, setValues] = useState(initialValues)
-    const { register, handleSubmit, errors } = useForm();
+    const [values, setValues] = useState({...initialValues, ...data})
+    const { register, handleSubmit, errors } = useForm()
     
     const handleInputChange = e => {
         const { name, value } = e.target
@@ -44,7 +31,7 @@ export default ({addDev}) => {
     }
 
     return (
-        <form className="card card-body" onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-group">
                 <input type="text" className="form-control" placeholder="Nombre" name="name" id="" 
                 value={values.name} onChange={handleInputChange} ref={register({ required: true })}/>
@@ -55,7 +42,7 @@ export default ({addDev}) => {
                 <label>Tipo</label>
                 <select className="form-control" name="type" id="" value={values.type} onChange={handleInputChange}>
                     {
-                        typesDev.map((v, i) => <option key={i} value={v.value}>{translate(v.value)}</option>)
+                        CONSTANTS.TYPES.map((v, i) => <option key={i} value={v.value}>{translate(v.value)}</option>)
                     }
                 </select>
             </div>
@@ -63,11 +50,11 @@ export default ({addDev}) => {
                 <label>Estado</label>
                 <select className="form-control" name="state" id="" value={values.type} onChange={handleInputChange}>
                     {
-                        states.map((v, i) => <option key={i} value={v.value} >{translate(v.value)}</option>)
+                        CONSTANTS.STATES.map((v, i) => <option key={i} value={v.value} >{translate(v.value)}</option>)
                     }
                 </select>
             </div>
-            <button className="btn btn-block btn-info">
+            <button className="btn btn-block btn-success">
                 Guardar
             </button>
         </form>

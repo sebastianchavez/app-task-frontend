@@ -5,7 +5,11 @@ export const isLogin = async (to, from, next) => {
     if (isLogin) {
         next();
     } else {
-        next.redirect('/login');
-        next();
+        if(to.location.pathname === '/login' || to.location.pathname === '/register'){
+            next()
+        } else {
+            next.redirect('/login')
+            next()
+        }
     }
 };

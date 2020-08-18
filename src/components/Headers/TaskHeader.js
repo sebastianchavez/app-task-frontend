@@ -21,7 +21,7 @@ export default ({searchTask, setFilter, filter, devs}) => {
                         <label>Desarrollo</label>
                         <select name="dev" className="form-control" id="" onChange={e => setFilter({ ...filter, devId: e.target.value })}>
                             <option value=""></option>
-                            {devs.map((d, i) => <option key={i + '_dev'} value={d._id}>{d.name}</option>)}
+                            {devs.map((d, i) => <option key={i + '_dev'} value={d.dev._id}>{d.dev.name}</option>)}
                         </select>
                     </div>
                     <div className="col-md-3">
@@ -32,7 +32,7 @@ export default ({searchTask, setFilter, filter, devs}) => {
                         </select>
                     </div>
                     <div className="col-md-3">
-                        <button type="submit" className="btn btn-info btn-block mt-4">
+                        <button type="submit" className="btn btn-success btn-block mt-4">
                             Buscar
                         </button>
                     </div>

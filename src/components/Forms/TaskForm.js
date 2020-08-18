@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { useForm } from "react-hook-form";
+import { useForm } from "react-hook-form"
 import CONSTANTS from '../../constants/constants'
 
 export default ({ devs, data, onHide, addTask, editTask }) => {
 
-    const required = "Este campo es requerido";
+    const required = "Este campo es requerido"
 
     const initialStateValues = {
         name: '',
@@ -12,7 +12,7 @@ export default ({ devs, data, onHide, addTask, editTask }) => {
         plannedHours: 0,
         priority: 'low',
         state: 'created',
-        devId: devs[0]._id ? devs[0]._id : null,
+        devId: devs[0].dev._id ? devs[0].dev._id : null,
         comentary: ''
     }
 
@@ -46,7 +46,7 @@ export default ({ devs, data, onHide, addTask, editTask }) => {
         }
     }
 
-    const { register, handleSubmit, errors } = useForm();
+    const { register, handleSubmit, errors } = useForm()
 
     const errorMessage = error => {
         return <div className="invalid-feedback d-block">{error}</div>
@@ -78,8 +78,8 @@ export default ({ devs, data, onHide, addTask, editTask }) => {
                 <label>Desarrollos</label>
                 <select className="form-control" name="devId" onChange={handleInputChange} value={values.devId}>
                     {
-                        devs ?
-                        devs.map((d, i) => <option key={i} value={d._id}>{d.name}</option>)
+                        devs && devs.length > 0 ?
+                        devs.map((d, i) => <option key={i} value={d.dev._id}>{d.dev.name}</option>)
                         : null
                     }
                 </select>
@@ -105,7 +105,7 @@ export default ({ devs, data, onHide, addTask, editTask }) => {
                     {CONSTANTS.PRIORITIES.map((p, i) => <option key={i+'_priority'} value={p.value}>{p.name}</option>)}
                 </select>
             </div>
-            <button type="submit" className="btn btn-block btn-info">
+            <button type="submit" className="btn btn-block btn-success">
                 {data && data.action === 'new' ? 'Guardar' : 'Actualizar'}
             </button>
         </form>

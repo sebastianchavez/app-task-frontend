@@ -3,6 +3,17 @@ import {environments} from '../env'
 
 const apiUrl = environments.apiUrl
 
+axios.interceptors.request.use(
+    config => {
+        config.headers.authorization = `Bearer ${localStorage.getItem('currentUser') && JSON.parse(localStorage.getItem('currentUser')).accessToken ? JSON.parse(localStorage.getItem('currentUser')).accessToken : ''}`
+        return config
+    },
+    error => {
+        return Promise.reject(error)
+    }
+)
+
+
 export const get = (url) => {
     return axios.get(`${apiUrl}${url}`)
 }
